@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1d211c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Lucírnaga · Velas de Soya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ── */
+    :root {
+      --cream:   #e7d5a6;
+      --taupe:   #7a7262;
+      --green:   #72a435;
+      --dark:    #1d211c;
+      --cream-t: rgba(231,213,166,.15);
+      --green-t: rgba(114,164,53,.12);
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--dark);
+      color: var(--cream);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* safe-area for iPhone notch/Dynamic Island */
+    nav {
+      padding-top: max(1.2rem, env(safe-area-inset-top));
+      padding-left: max(5vw, env(safe-area-inset-left));
+      padding-right: max(5vw, env(safe-area-inset-right));
+    }
+    footer {
+      padding-bottom: max(3rem, calc(2rem + env(safe-area-inset-bottom)));
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 5vw;
+      background: rgba(29,33,28,.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(231,213,166,.08);
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.25rem, 3vw, 1.6rem);
+      font-weight: 300;
+      letter-spacing: .12em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .logo span { color: var(--green); }
+    .nav-links { display: flex; gap: clamp(1rem, 3vw, 2.5rem); list-style: none; }
+    .nav-links a {
+      font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(231,213,166,.7); text-decoration: none;
+      transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--green); }
+
+    /* hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1.5px;
+      background: var(--cream); transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* mobile menu */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; top: 60px; z-index: 99;
+      background: rgba(29,33,28,.97);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; color: var(--cream); text-decoration: none;
+      transition: color .3s;
+    }
+    .mobile-menu a:hover { color: var(--green); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid; place-items: center;
+      position: relative; overflow: hidden;
+      padding: 6rem 5vw 4rem;
+      text-align: center;
+    }
+
+    /* animated background circles */
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+    }
+    .hero::before {
+      width: min(600px, 90vw); height: min(600px, 90vw);
+      background: var(--green-t);
+      top: -10%; right: -15%;
+      animation: drift1 12s ease-in-out infinite alternate;
+    }
+    .hero::after {
+      width: min(500px, 80vw); height: min(500px, 80vw);
+      background: rgba(231,213,166,.06);
+      bottom: -5%; left: -10%;
+      animation: drift2 15s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.1); } }
+    @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-30px,20px) scale(1.08); } }
+
+    .hero-tag {
+      font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 1.5rem;
+      animation: fadeUp .8s .2s both;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 300; line-height: 1.05;
+      color: var(--cream);
+      animation: fadeUp .8s .4s both;
+    }
+    .hero-title em {
+      font-style: italic; color: var(--green);
+    }
+    .hero-sub {
+      max-width: 520px; margin: 1.8rem auto 0;
+      font-size: clamp(.85rem, 2vw, 1rem);
+      font-weight: 300; line-height: 1.8;
+      color: rgba(231,213,166,.65);
+      animation: fadeUp .8s .6s both;
+    }
+    .hero-cta {
+      margin-top: 2.8rem;
+      display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp .8s .8s both;
+    }
+    .btn {
+      padding: .75rem 2rem; font-family: 'Jost', sans-serif;
+      font-size: .8rem; letter-spacing: .16em; text-transform: uppercase;
+      border-radius: 2px; cursor: pointer; transition: all .3s; text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--green); color: var(--dark); border: none;
+    }
+    .btn-primary:hover { background: #8dc448; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(114,164,53,.35); }
+    .btn-outline {
+      background: transparent; color: var(--cream);
+      border: 1px solid rgba(231,213,166,.35);
+    }
+    .btn-outline:hover { border-color: var(--cream); transform: translateY(-2px); }
+
+    /* flame icon */
+    .flame-icon {
+      font-size: clamp(3rem, 6vw, 4.5rem);
+      display: block; margin: 0 auto 1rem;
+      animation: flicker 2.5s ease-in-out infinite;
+    }
+    @keyframes flicker {
+      0%,100% { transform: scale(1) rotate(-1deg); opacity: 1; }
+      50%      { transform: scale(1.06) rotate(1deg); opacity: .85; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* divider */
+    .divider {
+      width: 60px; height: 1px; background: var(--green);
+      margin: 0 auto 2rem;
+    }
+
+    /* ── SECTIONS generic ── */
+    section { padding: clamp(4rem, 8vw, 7rem) 5vw; }
+    .section-tag {
+      font-size: .7rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--green); margin-bottom: .8rem; display: block;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 300; line-height: 1.15;
+      color: var(--cream); margin-bottom: 1.2rem;
+    }
+    .section-body {
+      font-size: clamp(.88rem, 1.8vw, 1rem);
+      font-weight: 300; line-height: 1.9;
+      color: rgba(231,213,166,.7);
+      max-width: 640px;
+    }
+
+    /* ── BENEFIT strip ── */
+    .benefits {
+      background: var(--cream-t);
+      border-top: 1px solid rgba(231,213,166,.08);
+      border-bottom: 1px solid rgba(231,213,166,.08);
+    }
+    .benefits-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .benefit-card {
+      text-align: center; padding: 1rem 0;
+    }
+    .benefit-icon { font-size: 2rem; margin-bottom: .6rem; display: block; }
+    .benefit-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; color: var(--cream); margin-bottom: .3rem;
+    }
+    .benefit-desc {
+      font-size: .8rem; color: rgba(231,213,166,.55);
+      line-height: 1.6; font-weight: 300;
+    }
+
+    /* ── SOYA section ── */
+    .soya-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .soya-visual {
+      position: relative;
+      aspect-ratio: 3/4;
+      border-radius: 4px; overflow: hidden;
+    }
+    .soya-visual-bg {
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(114,164,53,.25) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 70%, rgba(122,114,98,.3) 0%, transparent 55%),
+        linear-gradient(160deg, rgba(29,33,28,1) 30%, rgba(114,164,53,.08) 100%);
+      display: grid; place-items: center;
+    }
+    .candle-svg { width: 55%; opacity: .9; }
+    .soya-badge {
+      position: absolute; bottom: 1.5rem; right: 1.5rem;
+      width: clamp(80px, 12vw, 110px); height: clamp(80px, 12vw, 110px);
+      border-radius: 50%;
+      background: var(--green); color: var(--dark);
+      display: grid; place-items: center;
+      text-align: center; font-size: .7rem;
+      font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+      line-height: 1.3;
+      animation: spin 20s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── CARE section ── */
+    .care-section { max-width: 1100px; margin: 0 auto; }
+    .care-header { text-align: center; margin-bottom: 3.5rem; }
+    .care-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .care-card {
+      background: rgba(231,213,166,.04);
+      border: 1px solid rgba(231,213,166,.1);
+      border-radius: 4px; padding: 2rem 1.6rem;
+      transition: border-color .35s, transform .35s;
+      position: relative; overflow: hidden;
+    }
+    .care-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: var(--green); transform: scaleX(0);
+      transform-origin: left; transition: transform .4s;
+    }
+    .care-card:hover::before { transform: scaleX(1); }
+    .care-card:hover { border-color: rgba(114,164,53,.4); transform: translateY(-4px); }
+    .care-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300;
+      color: rgba(114,164,53,.18); line-height: 1;
+      margin-bottom: .4rem;
+    }
+    .care-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; color: var(--cream);
+      margin-bottom: .6rem;
+    }
+    .care-card-body {
+      font-size: .85rem; line-height: 1.8;
+      color: rgba(231,213,166,.6); font-weight: 300;
+    }
+
+    /* ── WAX MELTS section ── */
+    .wax-section {
+      background: linear-gradient(135deg, rgba(114,164,53,.06) 0%, rgba(122,114,98,.06) 100%);
+      border-top: 1px solid rgba(231,213,166,.07);
+    }
+    .wax-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem); align-items: center;
+    }
+    .wax-list { list-style: none; display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.8rem; }
+    .wax-list li {
+      display: flex; align-items: flex-start; gap: 1rem;
+      font-size: .9rem; color: rgba(231,213,166,.75);
+      line-height: 1.7; font-weight: 300;
+    }
+    .wax-list li::before {
+      content: '—'; color: var(--green);
+      flex-shrink: 0; margin-top: .05em;
+    }
+    .wax-visual {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: .8rem;
+    }
+    .wax-tile {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      display: grid; place-items: center;
+      font-size: 2rem;
+      transition: transform .35s;
+    }
+    .wax-tile:hover { transform: scale(1.05); }
+    .wax-tile:nth-child(1) { background: rgba(114,164,53,.15); }
+    .wax-tile:nth-child(2) { background: rgba(231,213,166,.08); margin-top: 1.5rem; }
+    .wax-tile:nth-child(3) { background: rgba(122,114,98,.2); margin-top: -1.5rem; }
+    .wax-tile:nth-child(4) { background: rgba(29,33,28,.6); border: 1px solid rgba(114,164,53,.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 5vw;
+      border-top: 1px solid rgba(231,213,166,.08);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 300; letter-spacing: .14em;
+      color: var(--cream); margin-bottom: 1rem; display: block;
+    }
+    .footer-logo span { color: var(--green); }
+    .footer-tagline {
+      font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(231,213,166,.35); margin-bottom: 2rem;
+    }
+    .footer-links {
+      display: flex; gap: 2rem; justify-content: center; list-style: none;
+      flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .footer-links a {
+      font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+      color: rgba(231,213,166,.4); text-decoration: none; transition: color .3s;
+    }
+    .footer-links a:hover { color: var(--green); }
+    .footer-copy {
+      font-size: .72rem; color: rgba(231,213,166,.22);
+    }
+
+    /* ── RESPONSIVE — Tablet ── */
+    @media (max-width: 900px) {
+      .benefits-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      /* NAV */
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      nav { padding: 1rem 1.4rem; }
+
+      /* HERO */
+      .hero { padding: 5.5rem 1.4rem 3.5rem; min-height: 100svh; }
+      .hero-title { font-size: clamp(2.4rem, 11vw, 3.8rem); }
+      .hero-sub { font-size: .9rem; margin-top: 1.2rem; }
+      .hero-cta { margin-top: 2rem; gap: .8rem; }
+      .btn { padding: .8rem 1.6rem; font-size: .78rem; min-height: 48px; display: inline-flex; align-items: center; }
+
+      /* BENEFITS */
+      .benefits-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .benefit-card { padding: .8rem .4rem; }
+      .benefit-icon { font-size: 1.6rem; margin-bottom: .4rem; }
+      .benefit-title { font-size: 1rem; }
+      .benefit-desc { font-size: .75rem; }
+
+      /* SOYA */
+      .soya-section {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .soya-visual {
+        aspect-ratio: 4/3;
+        max-height: 280px;
+      }
+
+      /* CARE */
+      .care-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .care-card { padding: 1.6rem 1.2rem; }
+      .care-num { font-size: 2.4rem; }
+
+      /* WAX */
+      .wax-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .wax-img-wrap { aspect-ratio: 4/3; max-height: 260px; order: -1; }
+
+      /* CONTACT */
+      .contact-cards { flex-direction: column; align-items: stretch; }
+      .contact-card { max-width: 100%; min-height: 100px; flex-direction: row; justify-content: flex-start; text-align: left; gap: 1rem; padding: 1.4rem 1.2rem; }
+      .contact-card-icon { font-size: 1.6rem; flex-shrink: 0; }
+      .contact-card-value { font-size: 1rem; }
+
+      /* FOOTER */
+      .footer-links { gap: 1.2rem; }
+      footer { padding: 2.5rem 1.4rem; }
+
+      /* SECTIONS */
+      section { padding: 3.5rem 1.4rem; }
+    }
+
+    /* ── RESPONSIVE — Mobile small ── */
+    @media (max-width: 420px) {
+      nav { padding: .9rem 1rem; }
+      .hero { padding: 5rem 1rem 3rem; }
+      section { padding: 3rem 1rem; }
+
+      .hero-title { font-size: clamp(2rem, 13vw, 3rem); }
+      .hero-sub { font-size: .85rem; }
+      .flame-icon { font-size: 2.4rem; }
+
+      .hero-cta { flex-direction: column; align-items: center; width: 100%; }
+      .btn { width: 100%; max-width: 280px; justify-content: center; }
+
+      .benefits-inner { grid-template-columns: 1fr 1fr; gap: .8rem; }
+      .benefit-card { padding: .7rem .2rem; }
+      .benefit-title { font-size: .9rem; }
+
+      .care-card { padding: 1.4rem 1rem; }
+
+      .contact-card { flex-direction: column; text-align: center; align-items: center; }
+
+      .footer-links { gap: .8rem; }
+      .footer-links a { font-size: .7rem; }
+
+      .section-title { font-size: clamp(1.8rem, 9vw, 2.8rem); }
+    }
+
+    /* Touch device improvements */
+    @media (hover: none) {
+      .care-card:hover { transform: none; border-color: rgba(231,213,166,.1); }
+      .care-card:hover::before { transform: scaleX(0); }
+      .wax-img-wrap:hover img { transform: none; }
+      .contact-card:hover { transform: none; }
+      .btn-primary:hover { transform: none; box-shadow: none; }
+      .btn-outline:hover { transform: none; }
+    }
+
+    /* ── CONTACT section ── */
+    .contact-section {
+      background: rgba(231,213,166,.03);
+      border-top: 1px solid rgba(231,213,166,.08);
+    }
+    .contact-inner {
+      max-width: 700px; margin: 0 auto; text-align: center;
+    }
+    .contact-cards {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 1.2rem; margin-top: 2.5rem;
+    }
+    .contact-card {
+      flex: 1; min-width: 220px; max-width: 280px;
+      background: rgba(231,213,166,.05);
+      border: 1px solid rgba(231,213,166,.12);
+      border-radius: 6px; padding: 1.8rem 1.4rem;
+      text-decoration: none; color: var(--cream);
+      transition: border-color .35s, transform .35s, background .35s;
+      display: flex; flex-direction: column; align-items: center; gap: .7rem;
+    }
+    .contact-card:hover {
+      border-color: var(--green);
+      background: rgba(114,164,53,.08);
+      transform: translateY(-4px);
+    }
+    .contact-card-icon { font-size: 1.8rem; }
+    .contact-card-label {
+      font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--green);
+    }
+    .contact-card-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; color: var(--cream);
+      text-align: center; line-height: 1.4;
+    }
+    .contact-card-sub {
+      font-size: .75rem; color: rgba(231,213,166,.45);
+    }
+
+    /* wax image */
+    .wax-img-wrap {
+      border-radius: 8px; overflow: hidden;
+      aspect-ratio: 3/4;
+      max-height: 480px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
+    }
+    .wax-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+      transition: transform .6s ease;
+    }
+    .wax-img-wrap:hover img { transform: scale(1.04); }
+
+    /* (wax img handled in main responsive block above) */
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo"><em style="font-style:italic;">Lucírnaga</em></a>
+    <ul class="nav-links">
+      <li><a href="#soya">¿Por qué soya?</a></li>
+      <li><a href="#cuidados">Cuidados</a></li>
+      <li><a href="#waxmelts">Wax Melts</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <button class="hamburger" id="burger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#soya" class="mob-link">¿Por qué soya?</a>
+    <a href="#cuidados" class="mob-link">Cuidados</a>
+    <a href="#waxmelts" class="mob-link">Wax Melts</a>
+    <a href="#contacto" class="mob-link">Contacto</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div>
+      <span class="flame-icon">🕯️</span>
+      <p class="hero-tag">100% Cera de Soya Natural</p>
+      <h1 class="hero-title">Luz que<br><em>cuida</em> tu hogar</h1>
+      <p class="hero-sub">Velas artesanales elaboradas con cera de soya pura. Más duración, menos humo, aroma que permanece.</p>
+      <div class="hero-cta">
+        <a href="#soya" class="btn btn-primary">Descubrir</a>
+        <a href="#cuidados" class="btn btn-outline">Ver cuidados</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS STRIP -->
+  <section class="benefits">
+    <div class="benefits-inner">
+      <div class="benefit-card reveal">
+        <span class="benefit-icon">🌿</span>
+        <div class="benefit-title">100% Natural</div>
+        <div class="benefit-desc">Sin toxinas, sin parafina, sin petroquímicos</div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <span class="benefit-icon">⏳</span>
+        <div class="benefit-title">Mayor Duración</div>
+        <div class="benefit-desc">Arde hasta un 50% más que velas convencionales</div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-2">
+        <span class="benefit-icon">💨</span>
+        <div class="benefit-title">Menos Humo</div>
+        <div class="benefit-desc">Combustión limpia para un ambiente saludable</div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-3">
+        <span class="benefit-icon">🌸</span>
+        <div class="benefit-title">Aroma Puro</div>
+        <div class="benefit-desc">Libera fragancia de manera uniforme y prolongada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ¿POR QUÉ SOYA? -->
+  <section id="soya">
+    <div class="soya-section">
+      <div class="soya-visual reveal">
+        <div class="soya-visual-bg">
+          <!-- SVG candle illustration -->
+          <svg class="candle-svg" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- flame glow -->
+            <ellipse cx="100" cy="62" rx="22" ry="28" fill="rgba(114,164,53,.15)"/>
+            <!-- flame -->
+            <path d="M100 30 C88 48 84 58 100 72 C116 58 112 48 100 30Z" fill="#72a435" opacity=".9"/>
+            <path d="M100 38 C93 50 91 58 100 68 C109 58 107 50 100 38Z" fill="#e7d5a6" opacity=".7"/>
+            <!-- wick -->
+            <line x1="100" y1="72" x2="100" y2="90" stroke="#7a7262" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- jar body -->
+            <rect x="68" y="90" width="64" height="160" rx="6" fill="rgba(231,213,166,.08)" stroke="rgba(231,213,166,.25)" stroke-width="1.5"/>
+            <!-- wax inside -->
+            <rect x="72" y="150" width="56" height="96" rx="3" fill="rgba(231,213,166,.12)"/>
+            <!-- jar shine -->
+            <line x1="82" y1="100" x2="82" y2="230" stroke="rgba(231,213,166,.12)" stroke-width="4" stroke-linecap="round"/>
+            <!-- label area -->
+            <rect x="76" y="160" width="48" height="60" rx="3" fill="rgba(29,33,28,.4)" stroke="rgba(114,164,53,.3)" stroke-width="1"/>
+            <text x="100" y="183" text-anchor="middle" fill="rgba(114,164,53,.8)" font-size="6" font-family="serif" letter-spacing="1.5">SOYA</text>
+            <line x1="84" y1="190" x2="116" y2="190" stroke="rgba(231,213,166,.2)" stroke-width=".8"/>
+            <text x="100" y="202" text-anchor="middle" fill="rgba(231,213,166,.5)" font-size="5" font-family="sans-serif" letter-spacing="1">100% NATURAL</text>
+          </svg>
+        </div>
+        <div class="soya-badge">100%<br>Cera<br>de Soya</div>
+      </div>
+
+      <div>
+        <span class="section-tag reveal">¿Por qué elegir soya?</span>
+        <h2 class="section-title reveal reveal-delay-1">No es solo<br>una <em style="font-style:italic;color:var(--green);">vela</em></h2>
+        <div class="divider reveal reveal-delay-1"></div>
+        <p class="section-body reveal reveal-delay-2">
+          La cera de soya no es dañina ni tóxica como la de parafina. Al ser de origen vegetal y renovable, su combustión es más limpia, produciendo significativamente menos hollín y compuestos dañinos.
+        </p>
+        <p class="section-body reveal reveal-delay-3" style="margin-top:1rem;">
+          Esto se traduce en un hogar más saludable para ti, tu familia y tus mascotas, sin sacrificar el ambiente cálido y aromático que una vela puede crear.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUIDADOS -->
+  <section id="cuidados" style="background: rgba(231,213,166,.02);">
+    <div class="care-section">
+      <div class="care-header">
+        <span class="section-tag reveal">Guía de uso</span>
+        <h2 class="section-title reveal reveal-delay-1">Cuidados de tu<br>vela de soya</h2>
+        <p class="section-body reveal reveal-delay-2" style="margin: 0 auto; text-align:center;">
+          Las velas de soya duran más y generan menos humo que las tradicionales, pero necesitan ciertos cuidados para aprovecharlas al máximo.
+        </p>
+      </div>
+
+      <div class="care-grid">
+        <div class="care-card reveal">
+          <div class="care-num">01</div>
+          <div class="care-card-title">Primera quema</div>
+          <div class="care-card-body">Antes de encenderla por primera vez, deja que la cera se derrita de manera uniforme hasta los bordes del recipiente. Esto evita que se forme un "túnel" y ayuda a que la vela dure mucho más.</div>
+        </div>
+        <div class="care-card reveal reveal-delay-1">
+          <div class="care-num">02</div>
+          <div class="care-card-title">Recorta la mecha</div>
+          <div class="care-card-body">Mantén la mecha recortada a unos 5 mm antes de cada uso. Esto evita el humo excesivo y que la flama sea demasiado grande, garantizando una combustión limpia.</div>
+        </div>
+        <div class="care-card reveal reveal-delay-2">
+          <div class="care-num">03</div>
+          <div class="care-card-title">Tiempo de encendido</div>
+          <div class="care-card-body">No la dejes encendida más de 3 a 4 horas seguidas. El calor excesivo puede afectar la calidad de la cera y acortar la vida de tu vela.</div>
+        </div>
+        <div class="care-card reveal reveal-delay-3">
+          <div class="care-num">04</div>
+          <div class="care-card-title">Ubicación segura</div>
+          <div class="care-card-body">Colócala en una superficie plana, lejos de corrientes de aire, niños y mascotas. El viento puede generar una llama irregular y aumentar el consumo de cera.</div>
+        </div>
+        <div class="care-card reveal reveal-delay-1">
+          <div class="care-num">05</div>
+          <div class="care-card-title">Cómo apagarla</div>
+          <div class="care-card-body">Evita apagarla soplando fuerte. Es mejor usar un apagavelas o taparla suavemente para no generar humo ni dañar la mecha.</div>
+        </div>
+        <div class="care-card reveal reveal-delay-2" style="background: rgba(114,164,53,.06); border-color: rgba(114,164,53,.2);">
+          <div class="care-num" style="color:rgba(114,164,53,.35);">✦</div>
+          <div class="care-card-title">El resultado</div>
+          <div class="care-card-body">Siguiendo estos cuidados, tu vela de soya durará más tiempo, olerá mejor y será más segura de usar en casa. Una inversión que vale la pena.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAX MELTS -->
+  <section id="waxmelts" class="wax-section">
+    <div class="wax-inner">
+      <div>
+        <span class="section-tag reveal">También de soya</span>
+        <h2 class="section-title reveal reveal-delay-1">Wax Melts:<br>aroma <em style="font-style:italic;color:var(--green);">sin llama</em></h2>
+        <div class="divider reveal reveal-delay-1"></div>
+        <p class="section-body reveal reveal-delay-2">
+          Los wax melts son una forma versátil y segura de aromatizar tus espacios. Sin llama directa, son ideales para hogares con niños y mascotas.
+        </p>
+        <ul class="wax-list reveal reveal-delay-3">
+          <li>Elaborados con la misma cera de soya 100% natural de nuestras velas</li>
+          <li>Se usan con un quemador eléctrico o de tealight</li>
+          <li>Liberan aroma de forma gradual y prolongada</li>
+          <li>Reutilizables: puedes mezclar aromas para crear tu fragancia ideal</li>
+          <li>Sin toxinas, sin hollín, sin preocupaciones</li>
+        </ul>
+      </div>
+
+      <div class="wax-img-wrap reveal">
+        <img src="https://www.mentaatelier.com/cdn/shop/files/quemador-toad-1745023.jpg?v=1773337472&width=1946" alt="Quemador de wax melts de soya" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="contact-section">
+    <div class="contact-inner">
+      <span class="section-tag reveal">Estamos para ti</span>
+      <h2 class="section-title reveal reveal-delay-1">Contáctanos</h2>
+      <div class="divider reveal reveal-delay-1"></div>
+      <p class="section-body reveal reveal-delay-2" style="margin: 0 auto; text-align:center;">
+        Escríbenos o llámanos, con gusto te atendemos y resolvemos cualquier duda sobre nuestras velas y wax melts.
+      </p>
+      <div class="contact-cards">
+        <a href="tel:+523343310992" class="contact-card reveal">
+          <span class="contact-card-icon">📞</span>
+          <span class="contact-card-label">Teléfono</span>
+          <span class="contact-card-value">+52 33 4331 0992</span>
+          <span class="contact-card-sub">Toca para llamar</span>
+        </a>
+        <a href="https://www.instagram.com/velas_luciernaga__/" target="_blank" rel="noopener" class="contact-card reveal reveal-delay-1">
+          <span class="contact-card-icon">📸</span>
+          <span class="contact-card-label">Instagram</span>
+          <span class="contact-card-value">@velas_luciernaga__</span>
+          <span class="contact-card-sub">Ver perfil</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo"><em style="font-style:italic;">Lucírnaga</em></span>
+    <p class="footer-tagline">Ilumina con consciencia · 100% Cera de Soya</p>
+    <ul class="footer-links">
+      <li><a href="#home">Inicio</a></li>
+      <li><a href="#soya">¿Por qué soya?</a></li>
+      <li><a href="#cuidados">Cuidados</a></li>
+      <li><a href="#waxmelts">Wax Melts</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 Lucírnaga · Velas artesanales de cera de soya</p>
+  </footer>
+
+  <script>
+    // Hamburger menu
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('.mob-link').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
